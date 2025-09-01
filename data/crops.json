@@ -1,0 +1,117 @@
+{
+  "crops": [
+    {
+      "name": "Tomatoes",
+      "scientificName": "Solanum lycopersicum",
+      "plantingSeason": "Spring",
+      "harvestTime": "60-85 days",
+      "soilPh": "6.0-6.8",
+      "spacing": "18-24 inches",
+      "waterNeeds": "1-2 inches per week",
+      "sunlight": "Full sun (6-8 hours)",
+      "commonPests": ["Aphids", "Tomato hornworm", "Whiteflies"],
+      "commonDiseases": ["Blossom end rot", "Early blight", "Late blight"],
+      "tips": [
+        "Plant deep, burying 2/3 of the stem",
+        "Use stakes or cages for support",
+        "Water at soil level to prevent disease",
+        "Remove suckers for better fruit production"
+      ]
+    },
+    {
+      "name": "Corn",
+      "scientificName": "Zea mays",
+      "plantingSeason": "Spring",
+      "harvestTime": "60-100 days",
+      "soilPh": "6.0-7.0",
+      "spacing": "8-12 inches",
+      "waterNeeds": "1-1.5 inches per week",
+      "sunlight": "Full sun (8+ hours)",
+      "commonPests": ["Corn earworm", "Aphids", "Corn rootworm"],
+      "commonDiseases": ["Rust", "Smut", "Blight"],
+      "tips": [
+        "Plant in blocks for better pollination",
+        "Side-dress with nitrogen when 12 inches tall",
+        "Harvest when kernels are milky",
+        "Plant multiple varieties for extended harvest"
+      ]
+    },
+    {
+      "name": "Lettuce",
+      "scientificName": "Lactuca sativa",
+      "plantingSeason": "Spring/Fall",
+      "harvestTime": "45-65 days",
+      "soilPh": "6.0-7.0",
+      "spacing": "6-12 inches",
+      "waterNeeds": "1 inch per week",
+      "sunlight": "Partial shade to full sun",
+      "commonPests": ["Aphids", "Slugs", "Cutworms"],
+      "commonDiseases": ["Downy mildew", "Bacterial leaf spot"],
+      "tips": [
+        "Plant in cool weather",
+        "Keep soil consistently moist",
+        "Harvest outer leaves for continuous growth",
+        "Use row covers for pest protection"
+      ]
+    },
+    {
+      "name": "Carrots",
+      "scientificName": "Daucus carota",
+      "plantingSeason": "Spring/Fall",
+      "harvestTime": "70-80 days",
+      "soilPh": "6.0-6.8",
+      "spacing": "2-3 inches",
+      "waterNeeds": "1 inch per week",
+      "sunlight": "Full sun to partial shade",
+      "commonPests": ["Carrot rust fly", "Aphids", "Wireworms"],
+      "commonDiseases": ["Leaf blight", "Root rot"],
+      "tips": [
+        "Plant in loose, stone-free soil",
+        "Thin seedlings to prevent crowding",
+        "Keep soil consistently moist",
+        "Harvest when shoulders are visible"
+      ]
+    },
+    {
+      "name": "Peppers",
+      "scientificName": "Capsicum annuum",
+      "plantingSeason": "Spring",
+      "harvestTime": "60-90 days",
+      "soilPh": "6.0-6.8",
+      "spacing": "18-24 inches",
+      "waterNeeds": "1-2 inches per week",
+      "sunlight": "Full sun (6-8 hours)",
+      "commonPests": ["Aphids", "Thrips", "Pepper weevil"],
+      "commonDiseases": ["Bacterial spot", "Anthracnose", "Blossom end rot"],
+      "tips": [
+        "Start seeds indoors 8-10 weeks before last frost",
+        "Harden off seedlings before transplanting",
+        "Use mulch to retain moisture",
+        "Harvest when firm and fully colored"
+      ]
+    }
+  ],
+  "plantingZones": {
+    "3": "Very cold winters, short growing season",
+    "4": "Cold winters, moderate growing season",
+    "5": "Moderate winters, good growing season",
+    "6": "Mild winters, long growing season",
+    "7": "Warm winters, very long growing season",
+    "8": "Very warm winters, extended growing season",
+    "9": "Hot summers, mild winters",
+    "10": "Very hot summers, warm winters"
+  },
+  "soilTypes": {
+    "clay": "Heavy, retains water, needs organic matter",
+    "sandy": "Light, drains quickly, needs frequent watering",
+    "loamy": "Ideal mix of sand, silt, and clay",
+    "silty": "Smooth texture, good water retention"
+  },
+  "commonProblems": {
+    "yellowing_leaves": "Possible causes: nutrient deficiency, overwatering, or disease",
+    "stunted_growth": "Possible causes: poor soil, insufficient water, or root damage",
+    "wilting": "Possible causes: underwatering, root rot, or heat stress",
+    "brown_spots": "Possible causes: fungal disease, sunburn, or nutrient burn",
+    "no_fruit": "Possible causes: poor pollination, nutrient imbalance, or stress"
+  }
+}

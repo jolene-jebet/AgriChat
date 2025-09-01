@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgriChat - AI Farming Assistant</title>
+  
+  <!-- Essential meta tags -->
+  <meta name="description" content="Chat with AgriChat AI for expert farming advice, crop management tips, and agricultural insights.">
+  <meta name="robots" content="noindex, nofollow">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="assets/favicon/favicon.ico">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles/reset.css">
+  <link rel="stylesheet" href="styles/variables.css">
+  <link rel="stylesheet" href="styles/components.css">
+  <link rel="stylesheet" href="styles/layout.css">
+  <link rel="stylesheet" href="styles/pages.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="container">
+      <div class="flex items-center justify-between">
+        <a href="index.html" class="nav-brand">
+          🌱 AgriChat
+        </a>
+        <ul class="nav-menu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="chat.html" class="nav-link" style="color: var(--primary-green);">Chat</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Chat Container -->
+  <div class="chat-container">
+    <!-- Chat Header -->
+    <div class="chat-header">
+      <div class="chat-title">
+        <span>🌱</span>
+        <span>AgriChat Assistant</span>
+      </div>
+      <div class="chat-status">
+        <div class="status-indicator"></div>
+        <span>Online</span>
+      </div>
+    </div>
+
+    <!-- Chat Messages -->
+    <div class="chat-messages" id="chatMessages">
+      <!-- Welcome Message -->
+      <div class="message message--ai">
+        <div class="mb-3">
+          <strong>Welcome to AgriChat! 🌱</strong>
+        </div>
+        <div class="mb-3">
+          I'm your AI farming assistant, here to help with all your agricultural questions. 
+          Whether you need advice on crop planting, pest management, soil health, or sustainable farming practices, I'm here to help!
+        </div>
+        <div class="mb-3">
+          <strong>What can I help you with today?</strong>
+        </div>
+        <div class="message-time">Just now</div>
+      </div>
+
+      <!-- Suggested Questions -->
+      <div class="suggested-questions">
+        <h4>💡 Try asking:</h4>
+        <div class="question-chips">
+          <div class="question-chip" data-question="When is the best time to plant tomatoes?">
+            When is the best time to plant tomatoes?
+          </div>
+          <div class="question-chip" data-question="How do I identify and treat crop diseases?">
+            How do I identify and treat crop diseases?
+          </div>
+          <div class="question-chip" data-question="What's the ideal soil pH for corn?">
+            What's the ideal soil pH for corn?
+          </div>
+          <div class="question-chip" data-question="How much water does wheat need per week?">
+            How much water does wheat need per week?
+          </div>
+          <div class="question-chip" data-question="What are the signs of nutrient deficiency?">
+            What are the signs of nutrient deficiency?
+          </div>
+          <div class="question-chip" data-question="How do I prepare soil for planting season?">
+            How do I prepare soil for planting season?
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat Input -->
+    <div class="chat-input-container">
+      <form class="chat-input-form" id="chatForm">
+        <textarea 
+          class="chat-input" 
+          id="chatInput" 
+          placeholder="Ask me anything about farming, crops, or agriculture..."
+          rows="1"
+          maxlength="1000"
+        ></textarea>
+        <button type="submit" class="chat-send-btn" id="sendBtn">
+          <span>📤</span>
+        </button>
+      </form>
+      
+      <!-- Character Count -->
+      <div class="text-center mt-2">
+        <span class="text-xs opacity-60" id="charCount">0/1000</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- API Configuration Modal (Hidden by default) -->
+  <div id="apiModal" class="hidden" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center;">
+    <div class="card" style="max-width: 500px; margin: var(--space-4);">
+      <h3 class="card-title">🔑 API Configuration</h3>
+      <p class="mb-4">
+        To use AgriChat with real AI responses, you'll need a Hugging Face API token. 
+        Don't worry - you can still try the demo with sample responses!
+      </p>
+      
+      <div class="form-group">
+        <label class="form-label" for="apiToken">Hugging Face API Token (Optional)</label>
+        <input 
+          type="password" 
+          class="form-input" 
+          id="apiToken" 
+          placeholder="hf_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        >
+        <div class="text-sm opacity-70 mt-2">
+          Get your free token at <a href="https://huggingface.co/settings/tokens" target="_blank" style="color: var(--primary-green);">huggingface.co/settings/tokens</a>
+        </div>
+      </div>
+      
+      <div class="flex gap-3">
+        <button type="button" class="btn btn-primary" id="saveApiToken">
+          Save Token
+        </button>
+        <button type="button" class="btn btn-secondary" id="skipApiToken">
+          Skip (Demo Mode)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="hidden" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.9); z-index: 999; display: flex; align-items: center; justify-content: center;">
+    <div class="text-center">
+      <div class="loading-spinner" style="width: 40px; height: 40px; margin: 0 auto var(--space-4);"></div>
+      <p>Connecting to AgriChat...</p>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script src="js/utils.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/chat.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
