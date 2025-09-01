@@ -7,6 +7,9 @@
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => document.querySelectorAll(selector);
 
+// Create the main AgriChatUtils object
+window.AgriChatUtils = {};
+
 // Local Storage Utilities
 const Storage = {
   get(key, defaultValue = null) {
@@ -39,6 +42,9 @@ const Storage = {
     }
   }
 };
+
+// Add Storage to AgriChatUtils
+window.AgriChatUtils.Storage = Storage;
 
 // Date/Time Utilities
 const TimeUtils = {

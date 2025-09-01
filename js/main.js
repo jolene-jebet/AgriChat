@@ -117,6 +117,12 @@ class AgriChatApp {
       console.log('Chat manager ready');
     }
     
+    // Initialize chat sidebar
+    if (window.ChatSidebar) {
+      this.chatSidebar = new ChatSidebar();
+      console.log('Chat sidebar initialized');
+    }
+    
     // Add keyboard shortcuts info
     this.showKeyboardShortcuts();
   }

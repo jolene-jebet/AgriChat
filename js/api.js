@@ -1,4 +1,4 @@
-/**
+ /**
  * Hugging Face API Integration for AgriChat
  * Handles communication with Hugging Face Transformers API
  */
@@ -7,7 +7,7 @@ class HuggingFaceAPI {
   constructor(apiToken = null) {
     this.apiToken = apiToken;
     this.baseURL = 'https://api-inference.huggingface.co';
-    this.model = 'microsoft/DialoGPT-medium'; // Default model
+    this.model = 'gpt2'; // Default model
     this.timeout = 10000; // 10 seconds
     this.maxRetries = 3;
     
