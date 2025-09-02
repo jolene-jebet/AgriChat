@@ -7,14 +7,13 @@ AgriChat is an AI-powered farming assistant that provides expert agricultural ad
 - **AI-Powered Chat**: Get instant agricultural advice from an AI trained on farming best practices
 - **Responsive Design**: Works perfectly on desktop, tablet, and mobile devices
 - **Real-time Responses**: Fast, accurate answers to your farming questions
-- **Demo Mode**: Try the app without an API key using built-in sample responses
 - **Modern UI**: Clean, intuitive interface with smooth animations
 - **Accessibility**: WCAG 2.1 AA compliant design
 
 ## 🛠️ Tech Stack
 
 - **Frontend**: HTML5, CSS3, Vanilla JavaScript
-- **API**: Hugging Face Transformers API
+- **API**: Gemini Flash 2.0 API key
 - **Design**: Custom CSS with CSS Grid and Flexbox
 - **Fonts**: Figtree (Google Fonts)
 - **Icons**: Emoji-based icons for universal compatibility
@@ -35,7 +34,7 @@ agrichat/
 ├── js/
 │   ├── main.js              # Core application logic
 │   ├── chat.js              # Chat functionality
-│   ├── api.js               # Hugging Face API integration
+│   ├── api.js               # Gemini 2.0 API integration
 │   ├── ui.js                # UI interactions
 │   └── utils.js             # Utility functions
 ├── assets/
@@ -44,62 +43,44 @@ agrichat/
 │   └── favicon/             # Favicon files
 ├── data/
 │   └── crops.json           # Sample crop data
-└── docs/
-    └── build_plan.txt       # Development build plan
+└── docs-prompts/
+    └── build_plan.txt       # Development build plan of the front end
+    └── mysql_intergration_instructions.txt       # Development build plan of the backend
 ```
 
 ## 🚀 Quick Start
 
-### Option 1: Local Development Server
+Installation
 
-1. **Clone or download** the project files
-2. **Start a local server**:
-   ```bash
-   # Using Python 3
-   python -m http.server 8000
-   
-   # Using Python 2
-   python -m SimpleHTTPServer 8000
-   
-   # Using Node.js (if you have http-server installed)
-   npx http-server
-   ```
-3. **Open your browser** and navigate to `http://localhost:8000`
+Clone the repository:
+bashgit clone <repository-url>
+cd agrichat
 
-### Option 2: VS Code Live Server
+Install dependencies:
+bashnpm install
 
-1. **Open the project** in VS Code
-2. **Install the Live Server extension** (if not already installed)
-3. **Right-click on `index.html`** and select "Open with Live Server"
+Set up the database:
+bash# Create database
+mysql -u root -p
+CREATE DATABASE agrichat;
 
-### Option 3: Direct File Opening
+# Import schema
+mysql -u root -p agrichat < database/schema.sql
 
-Simply open `index.html` in your web browser (some features may be limited due to CORS restrictions).
+Configure environment variables:
+bashcp .env.example .env
+# Edit .env with your configuration
 
-## 🔑 API Configuration
+Start the server:
+bash# Development mode
+npm run dev
 
-### Demo Mode (No API Key Required)
+# Production mode
+npm start
 
-AgriChat works out of the box in demo mode with sample responses. Perfect for testing and demonstration purposes.
+Access the application:
+Open your browser and navigate to http://localhost:3000
 
-### Real AI Mode (Hugging Face API)
-
-For real AI responses, you'll need a Hugging Face API token:
-
-1. **Get a free API token**:
-   - Visit [Hugging Face Settings](https://huggingface.co/settings/tokens)
-   - Create a new token with "Read" permissions
-   - Copy the token (starts with `hf_`)
-
-2. **Configure the token**:
-   - Open the chat page
-   - Enter your token when prompted
-   - Or manually set it: `localStorage.setItem('agrichat_api_token', 'your_token_here')`
-
-3. **Recommended models**:
-   - `microsoft/DialoGPT-medium` (default)
-   - `facebook/blenderbot-400M-distill`
-   - `microsoft/DialoGPT-large` (for better responses)
 
 ## 🎨 Design System
 
@@ -136,18 +117,6 @@ AgriChat is built mobile-first and works on all devices:
 
 ## 🧪 Testing
 
-### Manual Testing Checklist
-
-- [ ] Landing page loads correctly
-- [ ] Navigation works between pages
-- [ ] Chat interface accepts messages
-- [ ] Demo mode provides sample responses
-- [ ] API mode works with valid token
-- [ ] Responsive design works on mobile
-- [ ] All interactive elements have hover states
-- [ ] Keyboard navigation works
-- [ ] No console errors
-
 ### Browser Compatibility
 
 - ✅ Chrome (latest)
@@ -155,95 +124,6 @@ AgriChat is built mobile-first and works on all devices:
 - ✅ Safari (latest)
 - ✅ Edge (latest)
 
-## 🔧 Customization
-
-### Adding New Features
-
-1. **Create new JavaScript modules** in the `js/` directory
-2. **Add corresponding CSS** in the `styles/` directory
-3. **Update `main.js`** to initialize new features
-4. **Follow the existing architecture** for consistency
-
-### Modifying Styles
-
-- **Global variables**: Edit `styles/variables.css`
-- **Components**: Edit `styles/components.css`
-- **Layout**: Edit `styles/layout.css`
-- **Page-specific**: Edit `styles/pages.css`
-
-### Adding New Pages
-
-1. **Create HTML file** following existing structure
-2. **Add navigation links** in all pages
-3. **Create page-specific styles** in `pages.css`
-4. **Add initialization logic** in `main.js`
-
-## 🚀 Deployment
-
-### Static Hosting (Recommended)
-
-Deploy to any static hosting service:
-
-- **Netlify**: Drag and drop the folder
-- **Vercel**: Connect your GitHub repository
-- **GitHub Pages**: Push to a repository and enable Pages
-- **Firebase Hosting**: Use Firebase CLI
-
-### Environment Variables
-
-For production deployment, consider setting:
-
-- `HUGGINGFACE_API_TOKEN`: Default API token
-- `ANALYTICS_ID`: Google Analytics tracking ID
-- `SENTRY_DSN`: Error tracking (if using Sentry)
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-**Chat not responding**:
-- Check browser console for errors
-- Verify API token is valid (if using real API)
-- Try refreshing the page
-
-**Styling issues**:
-- Clear browser cache
-- Check if all CSS files are loading
-- Verify file paths are correct
-
-**Mobile layout problems**:
-- Test on actual device, not just browser dev tools
-- Check viewport meta tag is present
-- Verify responsive CSS is loading
-
-### Debug Mode
-
-Enable debug mode by running in browser console:
-```javascript
-localStorage.setItem('agrichat_debug', 'true');
-```
-
-## 📈 Performance
-
-- **Page Load**: < 3 seconds on 3G
-- **First Paint**: < 1.5 seconds
-- **Interactive**: < 2 seconds
-- **Bundle Size**: < 100KB (no external dependencies)
-
-## 🔒 Privacy & Security
-
-- **No data collection**: All data stays in your browser
-- **Local storage**: Chat history stored locally
-- **API tokens**: Stored securely in localStorage
-- **HTTPS recommended**: For production deployment
-
-## 🤝 Contributing
-
-1. **Fork the repository**
-2. **Create a feature branch**
-3. **Make your changes**
-4. **Test thoroughly**
-5. **Submit a pull request**
 
 ## 📄 License
 
