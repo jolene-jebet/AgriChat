@@ -290,7 +290,7 @@ const ErrorUtils = {
 
   handleApiError(error) {
     if (error.status === 401) {
-      return 'Invalid API token. Please check your Hugging Face token.';
+      return 'Invalid API token. Please check your Gemini token.';
     } else if (error.status === 429) {
       return 'Rate limit exceeded. Please wait a moment before trying again.';
     } else if (error.status >= 500) {

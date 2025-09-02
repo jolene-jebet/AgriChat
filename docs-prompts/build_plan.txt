@@ -1,4 +1,4 @@
-# AgriChat Build Plan - 7 Hour Sprint
+# AgriChat Build Plan 
 **Project:** AI-powered farming assistant website
 **Tech Stack:** HTML5, CSS3, Vanilla JavaScript, Hugging Face API
 **Timeline:** 7 hours maximum

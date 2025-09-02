@@ -403,7 +403,7 @@ Available commands:
 - getAgriChatStatus() - Get app status
 - clearAgriChatData() - Clear all stored data
 
-For support, visit: https://github.com/agrichat
+For support, visit: https://github.com/jolene-jebet/AgriChat.git
 `);
 
 // Performance monitoring
