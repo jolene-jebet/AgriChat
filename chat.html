@@ -153,34 +153,28 @@
   </div>
 
   <!-- API Configuration Modal (Hidden by default) -->
-  <div id="apiModal" class="hidden" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center;">
-    <div class="card" style="max-width: 500px; margin: var(--space-4);">
-      <h3 class="card-title">🔑 API Configuration</h3>
-      <p class="mb-4">
-        To use AgriChat with real AI responses, you'll need a Hugging Face API token. 
-        Don't worry - you can still try the demo with sample responses!
-      </p>
+  <div id="apiModal" class="modal hidden">
+    <div class="modal-content">
+      <h3>Configure Gemini API</h3>
+      <p>To get the best responses, add your Gemini API key. Don't worry - it's stored locally and never shared!</p>
       
       <div class="form-group">
-        <label class="form-label" for="apiToken">Hugging Face API Token (Optional)</label>
+        <label for="apiToken">Gemini API Key:</label>
         <input 
           type="password" 
-          class="form-input" 
           id="apiToken" 
-          placeholder="hf_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+          placeholder="AIzaSy..." 
+          class="form-control"
+          autocomplete="off"
         >
-        <div class="text-sm opacity-70 mt-2">
-          Get your free token at <a href="https://huggingface.co/settings/tokens" target="_blank" style="color: var(--primary-green);">huggingface.co/settings/tokens</a>
-        </div>
+        <small class="form-text">
+          Get your free API key from <a href="https://makersuite.google.com/app/apikey" target="_blank">Google AI Studio</a>
+        </small>
       </div>
       
-      <div class="flex gap-3">
-        <button type="button" class="btn btn-primary" id="saveApiToken">
-          Save Token
-        </button>
-        <button type="button" class="btn btn-secondary" id="skipApiToken">
-          Skip (Demo Mode)
-        </button>
+      <div class="modal-actions">
+        <button id="saveApiToken" class="btn btn-primary">Save Key</button>
+        <button id="skipApiToken" class="btn btn-secondary">Use Demo Mode</button>
       </div>
     </div>
   </div>

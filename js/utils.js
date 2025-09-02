@@ -248,14 +248,17 @@ const AnimationUtils = {
 };
 
 // Validation Utilities
+// In js/utils.js, find this function and replace it:
 const ValidationUtils = {
   isValidEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   },
 
+  // OLD: isValidApiToken(token) { return token && token.startsWith('hf_') && token.length > 20; }
+  // NEW:
   isValidApiToken(token) {
-    return token && token.startsWith('hf_') && token.length > 20;
+    return token && token.startsWith('AIza') && token.length > 30;
   },
 
   isValidMessage(message) {

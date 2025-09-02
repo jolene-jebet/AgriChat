@@ -1,73 +1,122 @@
- /**
- * Hugging Face API Integration for AgriChat
- * Handles communication with Hugging Face Transformers API
+/**
+ * Gemini API Integration for AgriChat
+ * Handles communication with Google's Gemini AI API
  */
 
-class HuggingFaceAPI {
+class GeminiAPI {
   constructor(apiToken = null) {
     this.apiToken = apiToken;
-    this.baseURL = 'https://api-inference.huggingface.co';
-    this.model = 'gpt2'; // Default model
-    this.timeout = 10000; // 10 seconds
+    this.baseURL = 'https://generativelanguage.googleapis.com/v1beta';
+    this.model = 'gemini-1.5-flash'; // Using the fast, efficient model
+    this.timeout = 15000; // 15 seconds (Gemini can be a bit slower than HuggingFace)
     this.maxRetries = 3;
     
-    // Agricultural context prompt
-    this.systemPrompt = `You are AgriChat, an expert agricultural assistant. Provide practical, 
-    actionable advice about crop planting, farming techniques, pest management, soil health, 
-    and sustainable agriculture. Keep responses concise and helpful. Always prioritize safety 
-    and recommend consulting local agricultural extensions for specific chemical treatments.`;
+    // Agricultural context prompt - this is like giving the AI a job description
+    this.systemPrompt = `You are AgriChat, an expert agricultural assistant with deep knowledge of farming practices worldwide. Your role is to provide practical, actionable advice about:
+
+- Crop planting, growing, and harvesting
+- Soil health and fertility management  
+- Pest and disease identification and management
+- Sustainable farming practices
+- Irrigation and water management
+- Farm equipment and tools
+- Livestock care basics
+- Organic farming methods
+- Climate-smart agriculture
+
+Always provide:
+1. Clear, practical advice
+2. Safety warnings when relevant
+3. Suggestions to consult local agricultural extension services for region-specific guidance
+4. Multiple solution options when possible
+
+Keep responses helpful, concise (under 200 words), and encouraging. If you're unsure about something, say so and suggest consulting local experts.`;
   }
 
   /**
-   * Set the API token
+   * Set the API token - like giving the system your membership card
    */
   setApiToken(token) {
     this.apiToken = token;
   }
 
   /**
-   * Check if API token is valid
+   * Check if API token is valid - like checking if your membership card is real
    */
   hasValidToken() {
-    return this.apiToken && this.apiToken.startsWith('hf_') && this.apiToken.length > 20;
+    return this.apiToken && this.apiToken.startsWith('AIza') && this.apiToken.length > 30;
   }
 
   /**
-   * Make a request to the Hugging Face API
+   * Make a request to the Gemini API
+   * This is like having a conversation with the AI expert
    */
-  async query(inputs, options = {}) {
+  async query(userMessage, options = {}) {
     if (!this.hasValidToken()) {
-      throw new Error('Invalid or missing API token');
+      throw new Error('Invalid or missing Gemini API token');
     }
+
+    // Prepare the conversation - like setting up a meeting with an expert
+    const requestBody = {
+      contents: [
+        {
+          parts: [
+            {
+              text: `${this.systemPrompt}\n\nUser Question: ${userMessage}`
+            }
+          ]
+        }
+      ],
+      generationConfig: {
+        temperature: options.temperature || 0.7, // How creative the AI should be (0.7 is balanced)
+        maxOutputTokens: options.maxOutputTokens || 300, // Maximum length of response
+        topP: 0.8,
+        topK: 40
+      },
+      safetySettings: [
+        {
+          category: "HARM_CATEGORY_HARASSMENT",
+          threshold: "BLOCK_MEDIUM_AND_ABOVE"
+        },
+        {
+          category: "HARM_CATEGORY_HATE_SPEECH", 
+          threshold: "BLOCK_MEDIUM_AND_ABOVE"
+        },
+        {
+          category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+          threshold: "BLOCK_MEDIUM_AND_ABOVE"
+        },
+        {
+          category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+          threshold: "BLOCK_MEDIUM_AND_ABOVE"
+        }
+      ]
+    };
 
     const requestOptions = {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${this.apiToken}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        inputs: inputs,
-        parameters: {
-          max_length: options.maxLength || 150,
-          temperature: options.temperature || 0.7,
-          do_sample: true,
-          ...options.parameters
-        }
-      })
+      body: JSON.stringify(requestBody)
     };
 
-    // Add timeout
+    // Add timeout protection - like setting a timer for your meeting
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), this.timeout);
     requestOptions.signal = controller.signal;
 
     try {
-      const response = await fetch(`${this.baseURL}/models/${this.model}`, requestOptions);
+      // Make the actual API call - like asking your question to the expert
+      const response = await fetch(
+        `${this.baseURL}/models/${this.model}:generateContent?key=${this.apiToken}`, 
+        requestOptions
+      );
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(`Gemini API Error ${response.status}: ${errorData.error?.message || response.statusText}`);
       }
 
       const data = await response.json();
@@ -79,42 +128,51 @@ class HuggingFaceAPI {
   }
 
   /**
-   * Process the API response
+   * Process the API response - like interpreting what the expert told you
    */
   processResponse(data) {
-    if (Array.isArray(data) && data.length > 0) {
-      return data[0].generated_text || data[0].text || 'I apologize, but I couldn\'t generate a response. Please try again.';
+    try {
+      // Gemini's response structure is different from Hugging Face
+      if (data.candidates && data.candidates.length > 0) {
+        const candidate = data.candidates[0];
+        if (candidate.content && candidate.content.parts && candidate.content.parts.length > 0) {
+          const text = candidate.content.parts[0].text;
+          return text.trim();
+        }
+      }
+      
+      // If we can't find the response in the expected format
+      return 'I apologize, but I couldn\'t generate a proper response. Please try rephrasing your question.';
+    } catch (error) {
+      console.error('Error processing Gemini response:', error);
+      return 'I encountered an error while processing the response. Please try again.';
     }
-    
-    if (data.generated_text) {
-      return data.generated_text;
-    }
-    
-    if (data.text) {
-      return data.text;
-    }
-
-    return 'I apologize, but I couldn\'t generate a response. Please try again.';
   }
 
   /**
-   * Handle API errors
+   * Handle API errors - like dealing with problems during your conversation
    */
   handleError(error) {
+    console.error('Gemini API Error:', error);
+
     if (error.name === 'AbortError') {
-      return new Error('Request timeout. Please try again.');
+      return new Error('Request timeout. The AI is taking too long to respond. Please try again.');
     }
 
-    if (error.message.includes('401')) {
-      return new Error('Invalid API token. Please check your Hugging Face token.');
+    if (error.message.includes('401') || error.message.includes('403')) {
+      return new Error('Invalid API key. Please check your Gemini API key.');
     }
 
     if (error.message.includes('429')) {
-      return new Error('Rate limit exceeded. Please wait a moment before trying again.');
+      return new Error('Too many requests. Please wait a moment before trying again.');
     }
 
-    if (error.message.includes('500')) {
-      return new Error('Server error. Please try again later.');
+    if (error.message.includes('400')) {
+      return new Error('Invalid request. Please try rephrasing your question.');
+    }
+
+    if (error.message.includes('500') || error.message.includes('502') || error.message.includes('503')) {
+      return new Error('Gemini service is temporarily unavailable. Please try again in a few minutes.');
     }
 
     if (error.message.includes('network') || error.message.includes('fetch')) {
@@ -125,16 +183,26 @@ class HuggingFaceAPI {
   }
 
   /**
-   * Get agricultural advice with context
+   * Get agricultural advice with context - your main function for asking farming questions
    */
   async getAgriculturalAdvice(question, context = {}) {
     try {
-      // Enhance the question with agricultural context
-      const enhancedInput = `${this.systemPrompt}\n\nUser Question: ${question}`;
+      // Add any additional context to the question
+      let enhancedQuestion = question;
       
-      const response = await this.query(enhancedInput, {
-        maxLength: 200,
-        temperature: 0.6
+      if (context.location) {
+        enhancedQuestion += ` (Location: ${context.location})`;
+      }
+      if (context.cropType) {
+        enhancedQuestion += ` (Crop: ${context.cropType})`;
+      }
+      if (context.season) {
+        enhancedQuestion += ` (Season: ${context.season})`;
+      }
+
+      const response = await this.query(enhancedQuestion, {
+        temperature: 0.6, // Slightly more focused for agricultural advice
+        maxOutputTokens: 250
       });
 
       return this.cleanResponse(response);
@@ -145,24 +213,25 @@ class HuggingFaceAPI {
   }
 
   /**
-   * Clean and format the response
+   * Clean and format the response - like editing the expert's advice to make it clearer
    */
   cleanResponse(response) {
-    // Remove the system prompt from the response if it appears
-    let cleaned = response.replace(this.systemPrompt, '').trim();
-    
-    // Remove any duplicate text
-    const sentences = cleaned.split('. ');
-    const uniqueSentences = [...new Set(sentences)];
-    cleaned = uniqueSentences.join('. ');
+    if (!response || typeof response !== 'string') {
+      return 'I apologize, but I couldn\'t generate a proper response. Please try rephrasing your question.';
+    }
+
+    // Remove any unwanted prefixes that might come from the system prompt
+    let cleaned = response
+      .replace(/^(AgriChat:|Assistant:|AI:)/i, '')
+      .trim();
     
     // Ensure proper capitalization
     if (cleaned.length > 0) {
       cleaned = cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
     }
     
-    // Add period if missing
-    if (cleaned.length > 0 && !cleaned.endsWith('.') && !cleaned.endsWith('!') && !cleaned.endsWith('?')) {
+    // Add period if missing and doesn't end with punctuation
+    if (cleaned.length > 0 && !cleaned.match(/[.!?]$/)) {
       cleaned += '.';
     }
     
@@ -171,48 +240,65 @@ class HuggingFaceAPI {
 }
 
 /**
- * Mock API for demo purposes when no real API token is available
+ * Mock API for demo purposes - same as before but with updated responses
  */
 class MockAPI {
   constructor() {
     this.responses = [
-      "Based on your question, I'd recommend checking your soil pH levels first. Most crops prefer a pH between 6.0 and 7.0. You can test this with a simple soil test kit from your local garden center.",
-      "For optimal growth, ensure your plants receive adequate water, but avoid overwatering. A good rule of thumb is to water when the top inch of soil feels dry to the touch.",
-      "Pest management is crucial for healthy crops. Consider using integrated pest management (IPM) techniques, which combine biological, cultural, and chemical controls for the most effective results.",
-      "Crop rotation is an excellent practice for maintaining soil health. Try rotating between different plant families each season to prevent nutrient depletion and reduce pest problems.",
-      "Composting is a great way to improve soil fertility naturally. Mix green materials (like kitchen scraps) with brown materials (like leaves) in a 1:3 ratio for best results.",
-      "For better yields, consider companion planting. Some plants grow better together, like tomatoes with basil or corn with beans, which can help with pest control and nutrient sharing.",
-      "Timing is everything in farming. Check your local frost dates and plant accordingly. Most warm-season crops should be planted after the last frost date in your area.",
-      "Mulching around your plants helps retain moisture, suppress weeds, and regulate soil temperature. Organic mulches like straw or wood chips also add nutrients as they decompose."
+      "For healthy soil, test your pH levels first. Most crops thrive in soil with a pH between 6.0-7.0. You can get a simple test kit from any garden center for about $10-15.",
+      "Water management is crucial for crop success. Water deeply but less frequently to encourage deep root growth. Early morning watering (6-8 AM) reduces evaporation and prevents fungal diseases.",
+      "Integrated Pest Management (IPM) is your best approach for pest control. Start with beneficial insects, companion planting, and crop rotation before considering chemical treatments. Always consult your local extension office for region-specific pest issues.",
+      "Crop rotation prevents soil nutrient depletion and breaks pest cycles. Follow a simple rule: don't plant the same crop family in the same spot for at least 3 years. For example, rotate tomatoes → beans → lettuce → back to tomatoes.",
+      "Composting creates 'black gold' for your soil. Mix 3 parts brown materials (dried leaves, paper) with 1 part green materials (kitchen scraps, grass clippings). Turn monthly and you'll have rich compost in 6-12 months.",
+      "Companion planting can boost yields naturally. Try the 'Three Sisters' method: corn provides support for beans, beans fix nitrogen for corn and squash, and squash leaves shade the soil to retain moisture.",
+      "Know your local frost dates! Plant cool-season crops (lettuce, peas) 2-4 weeks before the last spring frost. Warm-season crops (tomatoes, peppers) should wait until after the last frost date.",
+      "Mulching is like giving your plants a blanket. Apply 2-3 inches of organic mulch around plants to retain moisture, suppress weeds, and regulate soil temperature. Straw, wood chips, and grass clippings work well."
     ];
   }
 
   async getAgriculturalAdvice(question) {
     // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
+    await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 1500));
     
-    // Return a random response
-    const randomResponse = this.responses[Math.floor(Math.random() * this.responses.length)];
+    // Select response based on keywords in question
+    let contextualResponse = this.getContextualResponse(question);
     
-    // Add some context based on keywords in the question
-    let contextualResponse = randomResponse;
+    return contextualResponse || this.getRandomResponse();
+  }
+
+  getContextualResponse(question) {
+    const lowerQuestion = question.toLowerCase();
     
-    if (question.toLowerCase().includes('tomato')) {
-      contextualResponse = "For tomatoes, ensure they receive at least 6-8 hours of direct sunlight daily. Plant them deep, burying about 2/3 of the stem to encourage strong root development. Water consistently to prevent blossom end rot.";
-    } else if (question.toLowerCase().includes('pest') || question.toLowerCase().includes('bug')) {
-      contextualResponse = "For pest control, start with the least toxic methods. Hand-picking larger pests, using insecticidal soap for soft-bodied insects, and encouraging beneficial insects like ladybugs can be very effective.";
-    } else if (question.toLowerCase().includes('soil') || question.toLowerCase().includes('dirt')) {
-      contextualResponse = "Healthy soil is the foundation of good farming. Test your soil annually and amend it with organic matter like compost. Good soil should be loose, well-draining, and rich in organic matter.";
-    } else if (question.toLowerCase().includes('water') || question.toLowerCase().includes('irrigation')) {
-      contextualResponse = "Water deeply but less frequently to encourage deep root growth. Early morning is the best time to water, as it reduces evaporation and helps prevent fungal diseases. Aim for about 1 inch of water per week for most crops.";
+    if (lowerQuestion.includes('tomato')) {
+      return "For tomatoes: Plant after last frost, provide 6-8 hours of sunlight, bury 2/3 of the stem when transplanting to encourage strong roots, and water consistently to prevent blossom end rot. Stake or cage tall varieties.";
     }
     
-    return contextualResponse;
+    if (lowerQuestion.includes('pest') || lowerQuestion.includes('bug') || lowerQuestion.includes('insect')) {
+      return "For pest control: Start with identification - take photos and consult your local extension office. Use beneficial insects like ladybugs for aphids, neem oil for soft-bodied insects, and row covers for physical protection. Avoid broad-spectrum pesticides that harm beneficial insects.";
+    }
+    
+    if (lowerQuestion.includes('soil') || lowerQuestion.includes('dirt') || lowerQuestion.includes('fertilizer')) {
+      return "For soil health: Test your soil first ($15-25 for a complete test). Add compost annually, maintain pH 6.0-7.0 for most crops, and consider cover crops during off-seasons to add organic matter and prevent erosion.";
+    }
+    
+    if (lowerQuestion.includes('water') || lowerQuestion.includes('irrigation') || lowerQuestion.includes('drought')) {
+      return "For watering: Deep, infrequent watering is best. Water early morning to reduce evaporation and disease. Most vegetables need 1-2 inches per week. Use drip irrigation or soaker hoses for efficient water use, especially in dry climates.";
+    }
+    
+    if (lowerQuestion.includes('organic') || lowerQuestion.includes('natural')) {
+      return "For organic growing: Build healthy soil with compost, use beneficial insects for pest control, practice crop rotation, choose disease-resistant varieties, and mulch heavily. Organic doesn't mean pesticide-free - there are approved organic treatments when needed.";
+    }
+    
+    return null;
+  }
+
+  getRandomResponse() {
+    return this.responses[Math.floor(Math.random() * this.responses.length)];
   }
 }
 
 /**
- * API Manager - Handles switching between real and mock API
+ * API Manager - handles switching between real Gemini API and mock API
  */
 class APIManager {
   constructor() {
@@ -225,34 +311,41 @@ class APIManager {
    * Initialize with API token
    */
   initialize(apiToken = null) {
-    if (apiToken && AgriChatUtils.ValidationUtils.isValidApiToken(apiToken)) {
-      this.api = new HuggingFaceAPI(apiToken);
+    if (apiToken && this.isValidGeminiToken(apiToken)) {
+      this.api = new GeminiAPI(apiToken);
       this.isDemoMode = false;
-      console.log('AgriChat: Real API initialized');
+      console.log('AgriChat: Gemini API initialized successfully ✅');
     } else {
       this.api = this.mockApi;
       this.isDemoMode = true;
-      console.log('AgriChat: Demo mode initialized');
+      console.log('AgriChat: Demo mode active (no valid Gemini API key) 🎭');
     }
+  }
+
+  /**
+   * Validate Gemini API token format
+   */
+  isValidGeminiToken(token) {
+    return token && token.startsWith('AIza') && token.length > 30;
   }
 
   /**
    * Get agricultural advice
    */
-  async getAgriculturalAdvice(question) {
+  async getAgriculturalAdvice(question, context = {}) {
     if (!this.api) {
       throw new Error('API not initialized');
     }
 
     try {
-      return await this.api.getAgriculturalAdvice(question);
+      return await this.api.getAgriculturalAdvice(question, context);
     } catch (error) {
       // If real API fails, fall back to mock
       if (!this.isDemoMode) {
-        console.warn('Real API failed, falling back to demo mode:', error);
+        console.warn('Gemini API failed, falling back to demo mode:', error);
         this.api = this.mockApi;
         this.isDemoMode = true;
-        return await this.api.getAgriculturalAdvice(question);
+        return await this.api.getAgriculturalAdvice(question, context);
       }
       throw error;
     }
@@ -271,7 +364,8 @@ class APIManager {
   getStatus() {
     return {
       isDemoMode: this.isDemoMode,
-      hasValidToken: this.api && this.api.hasValidToken ? this.api.hasValidToken() : false
+      hasValidToken: this.api && this.api.hasValidToken ? this.api.hasValidToken() : false,
+      apiProvider: this.isDemoMode ? 'Mock API' : 'Google Gemini'
     };
   }
 }
