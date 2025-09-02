@@ -11,7 +11,7 @@ CURRENT STATE
 ------------
 - Frontend-only application (HTML/CSS/JavaScript)
 - Local storage for chat history
-- Hugging Face API integration for AI responses
+- Gemini API integration for AI responses
 - No backend server or database
 
 RECOMMENDED ARCHITECTURE
@@ -81,32 +81,6 @@ CREATE INDEX idx_conversations_user_id ON conversations(user_id);
 CREATE INDEX idx_messages_conversation_id ON messages(conversation_id);
 CREATE INDEX idx_messages_timestamp ON messages(timestamp);
 
-
-FILE STRUCTURE AFTER IMPLEMENTATION
-----------------------------------
-/
-├── frontend/ (existing files)
-│   ├── index.html
-│   ├── chat.html
-│   ├── js/
-│   ├── styles/
-│   └── assets/
-├── backend/
-│   ├── package.json
-│   ├── server.js
-│   ├── config/
-│   │   └── database.js
-│   ├── routes/
-│   │   └── api.js
-│   ├── models/
-│   │   ├── conversation.js
-│   │   └── message.js
-│   └── utils/
-│       └── database.js
-├── database/
-│   └── schema.sql
-└── docs/
-    └── mysql_integration_instructions.txt
 
 ENVIRONMENT VARIABLES
 ---------------------

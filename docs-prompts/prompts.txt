@@ -1,0 +1,321 @@
+can you help me create a detailed prompt for cursor ai to code for me a project that is due in a 7 hours.  i am not sure about the design but i want it simple, mordern and classy.  make the prompt descriptive, in a step by step manner with the appropriate technical languages. the website should be modern , interactive. also add that it should analyze the initial document then create a txt file containing all the steps that it should follow, afterwards it should follow it and create the app then we will modfify
+
+think of yourself as a great ui/ux designer and product designer. can you design for me a website for an ai chatbot which you can ask to ask all about crop planting and farming. use the following colors: #96b43a, #313131, #elebe2 and #fdfdfd. also use the font: figtree
+
+# Cursor Task: Build **AgriChat** — AI Crop & Farming Chatbot Website (Simple • Modern • Classy)
+
+> **Goal:** Create a production‑ready, modern, interactive website for an AI chatbot that answers questions about crop planting and farming. Deliver a clean, elegant UI with excellent UX, accessible and responsive. **Use the given brand assets** and ship a working MVP first, then iteratively enhance.
+
+---
+
+## 0) Meta‑Instructions (Read Carefully)
+
+* Act as a **senior full‑stack engineer** and **UI/UX + product designer**.
+* **First, analyze this entire prompt** and extract all requirements.
+* **Then generate `/docs/build_plan.txt`** with a numbered, step‑by‑step plan (MVP first), including:
+
+  * Tasks, files to create, acceptance criteria, and time estimates.
+  * Checkboxes for progress.
+  * A short risk list with mitigations.
+* After creating `/docs/build_plan.txt`, **follow it** to implement the app end‑to‑end.
+* Make sensible assumptions; don’t pause for confirmation unless blocked by secrets.
+* Commit early and often. Prefer clear, small PR‑sized commits.
+
+---
+
+## 1) Brand & Design System
+
+* **Name:** AgriChat (feel free to use a leaf/seed icon).
+* **Font:** `Figtree` (Google Font). Use as the default UI font.
+* **Colors:**
+
+  * Primary Green: `#96B43A`
+  * Ink / Onyx: `#313131`
+  * Soft Mist (light accent): **`#E1EBE2`** *(Note: the supplied `#elebe2` is not a valid hex; use `#E1EBE2` instead.)*
+  * Paper: `#FDFDFD`
+* **Design vibes:** simple, modern, classy; generous white space; subtle motion; rounded corners; soft shadows.
+* **Accessibility:** Meet **WCAG 2.2 AA** for color contrast. Provide focus outlines; ensure keyboard navigation.
+* **Motion:** Use small, tasteful animations (e.g., 150–250ms)| reduce motion if `prefers-reduced-motion`.
+
+### 1.1 Tokens (Tailwind/CSS variables)
+
+Create a theme in `globals.css`:
+
+```css
+:root{
+  --brand-primary: #96B43A;
+  --brand-ink: #313131;
+  --brand-mist: #E1EBE2; /* corrected */
+  --brand-paper: #FDFDFD;
+  --radius: 16px;
+  --shadow-sm: 0 2px 8px rgba(0,0,0,.06);
+  --shadow-md: 0 8px 24px rgba(0,0,0,.08);
+}
+```
+
+Typography scale (Figtree):
+
+* Display: 56/64, Semibold
+* H1: 40/48, Semibold
+* H2: 28/36, Semibold
+* H3: 22/28, Medium
+* Body: 16/24, Regular
+* Small: 14/20, Regular
+
+---
+
+## 2) Tech Stack
+
+* **Framework:** Next.js (latest stable) + **TypeScript**
+* **Styling:** Tailwind CSS + CSS Variables
+* **Components:** shadcn/ui (Card, Button, Input, Textarea, Badge, Dialog, Sheet, Accordion, Skeleton)
+* **Icons:** lucide-react
+* **State:** Zustand (lightweight)
+* **Animations:** Framer Motion
+* **AI API:** OpenAI (env‐driven). If no key, fall back to a local rules‑based responder.
+* **Vector/Retrieval (MVP):** OpenAI Embeddings + simple cosine similarity (in‑memory cache). Seed a tiny knowledge base in `/data/crops.json`.
+* **Quality:** ESLint, Prettier, TypeScript strict, basic tests (Vitest + RTL) and e2e (Playwright) for happy path.
+* **Deployment:** Vercel config + preview environment.
+
+---
+
+## 3) Pages & Routes
+
+* `/` — **Marketing Landing** (Hero, value props, demo chat, CTA buttons)
+* `/chat` — **Full Chat Experience** (sticky input, streaming messages, crop/region helpers)
+* `/about` — Team/mission and safety disclaimers
+* `/privacy` — basic privacy/cookie policy
+* API:
+
+  * `/api/chat` — streaming chat endpoint (SSE/Web stream) that blends RAG snippets + OpenAI
+  * `/api/search` — returns KB matches for a query (debug/dev aid)
+
+---
+
+## 4) IA & Wireframe (MVP)
+
+**Navbar:** Logo (leaf), Links: Home, Chat, About. CTA: “Open Chat”.
+
+**Hero (Landing):**
+
+* Tagline: “Plant smarter. Grow better.”
+* Subtext: “Ask about crops, seasons, soils, pests, and get practical, localized tips.”
+* Primary CTA: **Open Chat**; Secondary: **How it works** (scrolls to features)
+* Background: subtle leaf pattern or soft gradient from `#E1EBE2 → #FDFDFD`.
+
+**Feature Grid (3–4 cards):**
+
+* “Crop‑specific guidance”
+* “Region & season aware”
+* “Pest & disease basics”
+* “Seed‑to‑harvest checklist”
+
+**Demo Chat Preview:**
+
+* Read‑only scripted exchange (with typewriter animation) showing how AgriChat asks clarifying questions.
+
+**Footer:** Links + small print.
+
+**/chat Layout:**
+
+* Left rail (lg screens): crop quick‑picks (Maize, Beans, Tomatoes, Potatoes, Sorghum…)
+* Main: chat transcript + source chips for retrieved snippets
+* Right rail (lg screens): region selector, soil tips, saved answers
+* Mobile: single column; floating “New chat” FAB
+
+---
+
+## 5) Chat Product Rules (System Prompt)
+
+In `/server/ai/systemPrompt.ts`, include:
+
+* Role: agronomy assistant focused on smallholder & commercial crops.
+* Style: concise, practical, step‑by‑step. Ask **1–2 clarifying questions** when inputs are missing (e.g., crop, region, soil, season).
+* Safety: avoid definitive chemical prescriptions; recommend consulting local extension officers for pesticides; provide water/soil safety warnings.
+* Retrieval: Prefer KB facts; cite sources briefly as chips (e.g., “KB: tomatoes/soil”).
+* If **no API key**, run `localRulesResponder()` that uses rule templates per crop and season.
+
+---
+
+## 6) Knowledge Base (MVP)
+
+* Create `/data/crops.json` with 8–12 entries. For each crop:
+
+  * `name`, `regions`, `planting_window`, `soil_pH`, `spacing`, `fertilizer_basics`, `common_pests`, `irrigation`, `harvest_signs`, `sources`.
+* Implement `/lib/embeddings.ts`:
+
+  * `embedText(text): number[]` (OpenAI Embeddings)
+  * `cosineSim(a,b)`
+  * `retrieve(query, topK=5)` returning snippets and reasons.
+* Cache embeddings in `/data/.cache/embeddings.json`.
+
+> **Note:** This is guidance, not a substitute for an agronomist. Surface a disclaimer in the UI and in first‑run modal.
+
+---
+
+## 7) Implementation Steps (High Level)
+
+1. **Scaffold** Next.js + TypeScript + Tailwind + shadcn
+2. Add **Figtree** via `next/font/google` and set Tailwind theme font.
+3. Implement **design tokens**, base styles, and layout primitives (Container, Section, Stack).
+4. Build **Navbar**, **Hero**, **FeatureGrid**, **Footer**.
+5. Build **Chat UI**: MessageBubble, ChatInput, SourceChips, EmptyState, LoadingSkeleton.
+6. Implement **/api/chat** with streaming (SSE or Web Streams API).
+7. Create **KB** + embeddings + retrieval; integrate RAG into chain.
+8. Add **first‑run modal** (collect region, experience level; save to `localStorage`).
+9. Add **tests**: unit (utils), component (ChatInput), e2e (basic chat flows).
+10. Add **env handling** + graceful fallback.
+11. Polish a11y, SEO (metadata), favicons/OG image.
+12. Write **README.md**, **/docs/build\_plan.txt** (already), and **DESIGN\_GUIDE.md**.
+
+---
+
+## 8) Detailed Build Directions (Do This)
+
+### 8.1 Project Setup
+
+* Initialize Next.js (latest) with TypeScript.
+* Install deps: `tailwindcss postcss autoprefixer @radix-ui/react-* class-variance-authority tailwind-variants lucide-react framer-motion zustand openai zod` and testing deps `vitest @testing-library/react @testing-library/jest-dom playwright`.
+* Configure Tailwind, add `content` globs and `fontFamily: { sans: ['var(--font-sans)'] }`.
+* Add Figtree:
+
+```ts
+// app/layout.tsx
+import { Figtree } from 'next/font/google'
+const figtree = Figtree({ subsets: ['latin'], variable: '--font-sans' })
+export default function RootLayout({ children }){
+  return (
+    <html lang="en" className={figtree.variable}>
+      <body>{children}</body>
+    </html>
+  )
+}
+```
+
+* Add base styles (`globals.css`): CSS variables from §1.1, focus rings, scroll‑behavior.
+
+### 8.2 Components
+
+* `components/ui/Button.tsx`, `Card.tsx`, etc. (can import shadcn boilerplate)
+* `components/NavBar.tsx`: sticky, translucent background on scroll, active link underline.
+* `components/Hero.tsx`: headline, subcopy, CTAs; subtle background illustration (SVG leaf strokes).
+* `components/FeatureGrid.tsx`: 3–4 cards with icons.
+* `components/chat/MessageBubble.tsx`: user/assistant variants; markdown rendering.
+* `components/chat/ChatInput.tsx`: textarea autoresize, send on `Cmd+Enter`, suggestion chips for common queries.
+* `components/chat/SourceChips.tsx`: clickable badges showing snippet titles.
+* `components/modals/FirstRunModal.tsx`: asks for region (select), experience (select); persist.
+
+### 8.3 Styles & Theming
+
+* Use the palette: text defaults to `--brand-ink` on `--brand-paper`.
+* Buttons: Primary = `--brand-primary` on `--brand-paper`; Hover = slightly darker; Focus ring with 2px outline.
+* Cards: background `#FFFFFF`, border `#EAEAEA`, shadow `var(--shadow-sm)`.
+
+### 8.4 API & AI Integration
+
+* `.env.example`:
+
+```
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-4o-mini
+EMBED_MODEL=text-embedding-3-small
+```
+
+* `/app/api/chat/route.ts`:
+
+  * Accepts `{ messages: ChatMessage[], userContext }`
+  * Performs retrieval: `const context = await retrieve(lastUserMessage)`
+  * Crafts system prompt per §5.
+  * Streams tokens back to client.
+* Graceful fallback if no API key: call `localRulesResponder()` that uses crop templates and user region.
+
+### 8.5 Client Streaming
+
+* Use `ReadableStream` with `fetch('/api/chat', { method:'POST' })`.
+* Append tokens to the last assistant message; autoscroll; show typing indicator.
+
+### 8.6 Knowledge Base
+
+* Seed `crops.json` with 10 crops and concise facts (maize, beans, tomatoes, potatoes, onions, cabbage, coffee, tea, rice, sorghum). Include `sources` (URLs or simple citations text).
+* Implement `retrieve()` that returns top‑K snippets and attaches `relevance`.
+
+### 8.7 UX Details
+
+* Empty state in `/chat`: suggestions like “Best maize planting schedule for rainy season”, “Tomato nursery setup?”.
+* On ambiguous queries, assistant asks for **one** missing detail (e.g., region or crop), not a long questionnaire.
+* Save transcripts to `localStorage` with a “Clear chat” option.
+
+### 8.8 Accessibility & SEO
+
+* Semantic landmarks; labels for inputs; visible focus outlines.
+* Metadata: title, description, OpenGraph image.
+* `robots.txt`, `sitemap.xml`.
+
+### 8.9 Tests
+
+* Vitest + RTL: render ChatInput, simulate typing + submit.
+* Playwright e2e: visit `/chat`, send a sample message, expect a streamed reply (mock the API in CI).
+
+### 8.10 Documentation & Handoff
+
+* `/docs/build_plan.txt` — the step list you generated.
+* `README.md` — how to run, env, deploy instructions.
+* `DESIGN_GUIDE.md` — palette, spacing, components, examples, do/don’t.
+
+---
+
+## 9) Copy & Microcopy (Use/Modify)
+
+* **Tagline:** Plant smarter. Grow better.
+* **Hero Subcopy:** Ask AgriChat about crops, soils, seasons, pests, and get practical, localized tips.
+* **CTA Primary:** Open Chat
+* **Safety Note (footer):** AgriChat provides general guidance. Always verify with local agronomists and follow your country’s regulations.
+
+---
+
+## 10) Acceptance Criteria (MVP must pass)
+
+* Landing and Chat pages styled with the defined palette & Figtree.
+* Chat streams assistant text; when `OPENAI_API_KEY` is absent, local fallback responds.
+* Retrieval surfaces small “source chips” under answers.
+* Responsive: mobile → desktop; keyboard accessible.
+* `/docs/build_plan.txt` exists and matches work performed.
+* README and `.env.example` present.
+
+---
+
+## 11) Backlog (If Time Remains)
+
+* User accounts + saved chats server‑side.
+* Region presets (e.g., rainfall zones) with data overlays.
+* Upload soil test (CSV) → tailored recommendations.
+* Multi‑language (i18n) support.
+* Analytics (privacy‑respecting) for popular crops/questions.
+
+---
+
+## 12) Commands & Scripts (suggested)
+
+Add NPM scripts:
+
+```json
+{
+  "dev": "next dev",
+  "build": "next build",
+  "start": "next start",
+  "lint": "next lint",
+  "test": "vitest",
+  "e2e": "playwright test"
+}
+```
+
+---
+
+## 13) What To Do Right Now (for Cursor)
+
+1. Parse this doc → extract requirements.
+2. Create `/docs/build_plan.txt` with a detailed step list and checkboxes.
+3. Scaffold the project and implement the MVP as specified.
+4. Commit with clear messages. Provide a final summary in the terminal of what’s done and what remains.
+
+> **Reminder:** Use the corrected color `#E1EBE2` instead of `#elebe2` and ensure Figtree is the default font.

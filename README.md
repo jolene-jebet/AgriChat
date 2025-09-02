@@ -53,98 +53,66 @@ agrichat/
 Installation
 
 Clone the repository:
-bashgit clone <repository-url>
+```
+bash
+```
+```
+git clone https://github.com/jolene-jebet/AgriChat.git
+```
+```
 cd agrichat
+```
 
 Install dependencies:
-bashnpm install
+```
+bash
+```
+```
+npm install
+```
 
 Set up the database:
+```
 bash# Create database
+```
+```
 mysql -u root -p
+````
+```
 CREATE DATABASE agrichat;
+```
 
 # Import schema
+```
 mysql -u root -p agrichat < database/schema.sql
+```
 
 Configure environment variables:
-bashcp .env.example .env
+```
+bash
+```
+```
+cp .env.example .env
+```
 # Edit .env with your configuration
 
 Start the server:
+```
 bash# Development mode
+```
+```
 npm run dev
+```
 
 # Production mode
 npm start
 
 Access the application:
-Open your browser and navigate to http://localhost:3000
-
-
-## 🎨 Design System
-
-### Color Palette
-
-```css
---primary-green: #96b43a    /* Primary brand color */
---dark-ink: #313131         /* Text and dark elements */
---soft-mist: #E1EBE2        /* Light accent */
---paper-white: #fdfdfd      /* Background */
---pure-white: #ffffff       /* Cards and highlights */
+Open your browser and navigate to
+```
+http://localhost:3000
 ```
 
-### Typography
-
-- **Font Family**: Figtree (Google Fonts)
-- **Scale**: 12px to 48px with consistent ratios
-- **Weights**: 400 (normal), 500 (medium), 600 (semibold), 700 (bold)
-
-### Spacing
-
-- **Scale**: 4px to 96px with consistent 4px increments
-- **Components**: Consistent padding and margins
-- **Responsive**: Adapts to different screen sizes
-
-## 📱 Responsive Design
-
-AgriChat is built mobile-first and works on all devices:
-
-- **Mobile**: 320px and up
-- **Tablet**: 768px and up  
-- **Desktop**: 1024px and up
-- **Large Desktop**: 1280px and up
-
-## 🧪 Testing
-
-### Browser Compatibility
-
-- ✅ Chrome (latest)
-- ✅ Firefox (latest)
-- ✅ Safari (latest)
-- ✅ Edge (latest)
-
-
-## 📄 License
-
-This project is open source and available under the [MIT License](LICENSE).
-
-## 🆘 Support
-
-- **Issues**: Report bugs via GitHub Issues
-- **Documentation**: Check this README and inline code comments
-- **Community**: Join our discussions for help and ideas
-
-## 🎯 Roadmap
-
-- [ ] Voice input/output
-- [ ] Image recognition for plant diseases
-- [ ] Weather integration
-- [ ] Multi-language support
-- [ ] Offline mode
-- [ ] Progressive Web App (PWA)
-- [ ] Advanced analytics
-- [ ] Integration with IoT devices
 
 ---
 

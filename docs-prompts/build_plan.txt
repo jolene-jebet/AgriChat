@@ -1,10 +1,9 @@
 # AgriChat Build Plan 
 **Project:** AI-powered farming assistant website
 **Tech Stack:** HTML5, CSS3, Vanilla JavaScript, Hugging Face API
-**Timeline:** 7 hours maximum
 **Priority Levels:** P0=Critical, P1=Important, P2=Nice-to-have
 
-## PHASE 1: FOUNDATION & PLANNING (Hour 1)
+## PHASE 1: FOUNDATION & PLANNING 
 
 ### Task 1-5: Project Setup (15 minutes)
 1. [P0] Create project directory structure (5 min)
@@ -23,7 +22,7 @@
 10. [P0] Build chat.html interface structure (5 min)
 11. [P0] Build about.html page structure (5 min)
 
-## PHASE 2: COMPONENT LIBRARY (Hour 2)
+## PHASE 2: COMPONENT LIBRARY 
 
 ### Task 21-30: Core Components (30 minutes)
 12. [P0] Create button component with all variants (10 min)
@@ -37,7 +36,7 @@
 18. [P0] Build footer component (5 min)
 19. [P0] Add loading and error state components (5 min)
 
-## PHASE 3: LANDING PAGE (Hour 3)
+## PHASE 3: LANDING PAGE 
 
 ### Task 41-50: Hero Section (30 minutes)
 20. [P0] Build hero section with headline and CTA (15 min)
@@ -49,7 +48,7 @@
 24. [P1] Add testimonial section (10 min)
 25. [P0] Build footer with links (5 min)
 
-## PHASE 4: CHAT INTERFACE (Hour 4)
+## PHASE 4: CHAT INTERFACE 
 
 ### Task 61-70: Chat Structure (30 minutes)
 26. [P0] Build chat message container (10 min)
@@ -62,20 +61,20 @@
 31. [P1] Add copy message functionality (10 min)
 32. [P1] Create suggested questions section (5 min)
 
-## PHASE 5: JAVASCRIPT CORE (Hour 5)
+## PHASE 5: JAVASCRIPT CORE 
 
 ### Task 81-90: Architecture (30 minutes)
 33. [P0] Create main application class (10 min)
 34. [P0] Build chat manager class (10 min)
 35. [P0] Implement UI interaction handlers (10 min)
 
-### Task 91-100: Core Functionality (30 minutes)
+### Task 91-100: Core Functionality 
 36. [P0] Add message sending logic (10 min)
 37. [P0] Implement auto-scroll functionality (5 min)
 38. [P0] Create error handling system (10 min)
 39. [P0] Add local storage for preferences (5 min)
 
-## PHASE 6: API INTEGRATION (Hour 6)
+## PHASE 6: API INTEGRATION
 
 ### Task 101-110: Hugging Face API (30 minutes)
 40. [P0] Create API client class (10 min)
@@ -88,7 +87,7 @@
 45. [P0] Add input validation and sanitization (10 min)
 46. [P0] Implement rate limit error handling (5 min)
 
-## PHASE 7: POLISH & TESTING (Hour 7)
+## PHASE 7: POLISH & TESTING 
 
 ### Task 121-130: Responsive Testing (30 minutes)
 47. [P0] Test mobile responsiveness (320px+) (10 min)
@@ -99,21 +98,6 @@
 50. [P0] Fix any bugs or issues (15 min)
 51. [P0] Add accessibility improvements (10 min)
 52. [P0] Create README with setup instructions (5 min)
-
-## RISK ASSESSMENT & MITIGATION
-
-### High Risk Items:
-- **API Integration Complexity** - Mitigation: Start with mock responses, add real API later
-- **Responsive Design Issues** - Mitigation: Test on multiple devices early and often
-- **Time Overrun** - Mitigation: Focus on P0 features only if time runs short
-
-### Medium Risk Items:
-- **Font Loading Issues** - Mitigation: Use system font fallbacks
-- **Browser Compatibility** - Mitigation: Test in multiple browsers during development
-
-### Low Risk Items:
-- **Design Polish** - Can be simplified if needed
-- **Advanced Features** - P1/P2 items can be dropped
 
 ## TESTING CHECKLIST
 
@@ -165,36 +149,6 @@ agrichat/
 └── docs/
     └── build_plan.txt       # This file
 ```
-
-## SUCCESS METRICS
-
-### Technical Metrics:
-- All pages load without errors
-- API integration functional (with proper token)
-- Responsive design passes device testing
-- No console errors in browser
-
-### Design Metrics:
-- Visual design matches specifications 90%+
-- Typography is consistent and readable
-- Color scheme properly implemented
-- Interactive elements provide clear feedback
-
-## EMERGENCY FALLBACKS
-
-**If API Integration Fails:**
-- Implement local mock responses for demo
-- Add clear instructions for API token setup
-
-**If Time Runs Short:**
-- Prioritize P0 features only
-- Use placeholder content where needed
-- Focus on core chat functionality
-
-**If Design Complexity Too High:**
-- Simplify to essential components only
-- Use system fonts as fallback
-- Reduce animation complexity
 
 ---
 
