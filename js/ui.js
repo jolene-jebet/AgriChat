@@ -20,7 +20,8 @@ class UIManager {
     this.loadingOverlay = $('#loadingOverlay');
     
     this.bindEvents();
-    this.checkApiConfiguration();
+    // Remove the API configuration check
+    // this.checkApiConfiguration();
     this.isInitialized = true;
   }
 
@@ -28,7 +29,7 @@ class UIManager {
    * Bind event listeners
    */
   bindEvents() {
-    // API Modal events
+    // API Modal events - keeping for potential future use but won't show automatically
     const saveApiTokenBtn = $('#saveApiToken');
     const skipApiTokenBtn = $('#skipApiToken');
     const apiTokenInput = $('#apiToken');
@@ -63,20 +64,12 @@ class UIManager {
   }
 
   /**
-   * Check if API configuration is needed
+   * REMOVED: checkApiConfiguration method
+   * The modal will no longer show automatically
    */
-  checkApiConfiguration() {
-    const savedToken = AgriChatUtils.Storage.get('agrichat_api_token');
-    const hasSeenModal = AgriChatUtils.Storage.get('agrichat_seen_api_modal', false);
-    
-    // Show modal if no token and haven't seen it before
-    if (!savedToken && !hasSeenModal && window.location.pathname.includes('chat.html')) {
-      this.showApiModal();
-    }
-  }
 
   /**
-   * Show API configuration modal
+   * Show API configuration modal (only if manually called)
    */
   showApiModal() {
     if (!this.apiModal) return;
@@ -123,7 +116,7 @@ class UIManager {
       
       this.hideApiModal();
     } else {
-      AgriChatUtils.NotificationUtils.error('Please enter a valid Hugging Face API token');
+      AgriChatUtils.NotificationUtils.error('Please enter a valid Gemini API token');
       apiTokenInput.focus();
     }
   }

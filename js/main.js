@@ -54,10 +54,22 @@ class AgriChatApp {
    * Initialize core components
    */
   async initializeComponents() {
-    // Initialize API Manager
+    // Initialize API Manager with hardcoded API key
     this.apiManager = window.AgriChatAPI;
+    
+    // REPLACE THIS WITH YOUR ACTUAL GEMINI API KEY
+    const API_KEY = 'AIzaSyD2m7CM-fKAuIVY5dckykAUGNhte5h8tzU';
+    
+    // You can also check if there's a saved token, but use the hardcoded one as default
     const savedToken = AgriChatUtils.Storage.get('agrichat_api_token');
-    this.apiManager.initialize(savedToken);
+    const apiKey = savedToken || API_KEY;
+    
+    this.apiManager.initialize(apiKey);
+    
+    // Store the API key for future use (optional)
+    if (!savedToken) {
+      AgriChatUtils.Storage.set('agrichat_api_token', API_KEY);
+    }
     
     // Initialize UI Manager
     this.uiManager = new UIManager();
